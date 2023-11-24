@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Pressable, Modal } from "react-native";
-import { useLocalSearchParams, Link } from "expo-router";
-import { FullWindowOverlay } from "react-native-screens";
 
 interface DruckerInterface {
   isModalVisible: boolean;
@@ -23,13 +21,34 @@ export default function Drucker({
   params,
 }: DruckerInterface) {
   const { rmNr, teileNr, menge, tr, scan } = params();
+  const sendPrintReq = async () => {
+    try {
+      const response = await fetch("https://galv.keuco.local", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          rmNr: rmNr,
+          teileNr: teileNr,
+          menge: menge,
+          tr: tr,
+          scan: scan,
+        }),
+      });
+      console.log("Success!");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Modal animationType="slide" transparent={true} visible={isModalVisible}>
       <View style={styles.container}>
-        <Pressable style={styles.pressable}>
+        <Pressable style={styles.pressable} onPress={() => sendPrintReq()}>
           <Text style={styles.text}>{data[0].title}</Text>
         </Pressable>
-        <Pressable style={styles.pressable}>
+        <Pressable style={styles.pressable} onPress={() => sendPrintReq()}>
           <Text style={styles.text}>{data[2].title}</Text>
         </Pressable>
         <Pressable
@@ -49,7 +68,7 @@ const styles = StyleSheet.create({
     width: "100%",
     position: "absolute",
     bottom: 0,
-    backgroundColor: "#ccc",
+    backgroundColor: "#fafafa",
     padding: 20,
     gap: 20,
     justifyContent: "space-between",

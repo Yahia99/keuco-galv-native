@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Pressable } from "react-native";
 import { useLocalSearchParams, Link } from "expo-router";
 import Drucker from "../components/Drucker";
-import { useLink } from "expo-router/build/hooks";
 
 export default function Uebersicht() {
   const { rmNr, teileNr, menge, tr, scan } = useLocalSearchParams();
