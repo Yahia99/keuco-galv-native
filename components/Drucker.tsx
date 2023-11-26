@@ -8,10 +8,11 @@ import {
   ActivityIndicator,
 } from "react-native";
 
+// Object's Interface
 interface DruckerInterface {
   isModalVisible: boolean;
   setIsModalVisible: (arg: boolean) => void;
-  data: { printerName1: String; printerName2: String };
+  data: {};
   params: () => {
     rmNr: string;
     teileNr: string;
@@ -27,9 +28,12 @@ export default function Drucker({
   data,
   params,
 }: DruckerInterface) {
-  const { rmNr, teileNr, menge, tr, scan } = params();
+  // States
   const [isLoading1, setIsLoading1] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);
+  // Getting params from previous page
+  const { rmNr, teileNr, menge, tr, scan } = params();
+  // Sending POST request
   const sendPrintReq = async () => {
     try {
       setIsLoading1(true);
@@ -50,24 +54,25 @@ export default function Drucker({
       });
       alert("Request Success");
       setIsModalVisible(false);
-      console.log("Success!");
-    } catch (error) {
+    } catch (err) {
       setIsLoading1(false);
       setIsLoading2(false);
-      alert("Request failed");
-      console.log(error);
+      alert(err);
     }
   };
   return (
     <Modal animationType="slide" transparent={true} visible={isModalVisible}>
       <View style={styles.container}>
         <Pressable onPress={() => sendPrintReq()}>
+          {/* 
+            Showing Loader if the request still processing
+          */}
           {isLoading1 ? (
             <Text style={styles.text}>
               <ActivityIndicator />
             </Text>
           ) : (
-            <Text style={styles.text}>{data.printerName1}</Text>
+            <Text style={styles.text}>{"Drucker 1"}</Text> // data.printerName1
           )}
         </Pressable>
         <Pressable onPress={() => sendPrintReq()}>
@@ -76,7 +81,7 @@ export default function Drucker({
               <ActivityIndicator />
             </Text>
           ) : (
-            <Text style={styles.text}>{data.printerName2}</Text>
+            <Text style={styles.text}>{"Drucker 2"}</Text> // data.printerName2
           )}
         </Pressable>
         <Pressable onPress={() => setIsModalVisible(false)}>
@@ -93,7 +98,7 @@ const styles = StyleSheet.create({
     width: "100%",
     position: "absolute",
     bottom: 0,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#eaeaea",
     paddingVertical: 10,
     paddingHorizontal: 20,
     gap: 10,
@@ -101,6 +106,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 18,
     borderTopLeftRadius: 18,
     alignItems: "stretch",
+    alignSelf: "center",
   },
   text: {
     padding: 25,
@@ -109,5 +115,7 @@ const styles = StyleSheet.create({
     backgroundColor: "steelblue",
     borderRadius: 10,
     textAlign: "center",
+    shadowColor: "#000",
+    elevation: 5,
   },
 });

@@ -8,7 +8,7 @@ import {
   Alert,
   Keyboard,
 } from "react-native";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import Counter from "../components/Counter";
 
@@ -19,7 +19,7 @@ export default function App() {
   const [teileNr, setTeileNr] = useState<String>("");
   const [menge, setMenge] = useState<number>(0);
   const [tr, setTr] = useState<String>("T");
-  const [scan, setScan] = useState<number>(0);
+  const [anzScans, setAnzScans] = useState<number>(0);
   const [letzteMenge, setLetzteMenge] = useState<number>(0);
   // Scanfunktion
   const scanBehandlung = (newScan: String) => {
@@ -35,23 +35,23 @@ export default function App() {
         result[2].includes("R") ? setTr("R") : "";
         setLetzteMenge(neueMenge);
         setMenge(menge + neueMenge);
-        setScan(scan + 1);
+        setAnzScans(anzScans + 1);
         setRmNr(neueRmNr);
         setTeileNr(neueTeileNr);
       };
-      const resetScan = () => {
+      const resetAnzScans = () => {
         setTr("T");
         setMenge(0);
         setLetzteMenge(0);
-        setScan(0);
+        setAnzScans(0);
         setRmNr("");
         setTeileNr("");
       };
-      // Check, ob keine werte gibt => (erster scan)
+      // Check, ob keine werte gibt => (erster Scan)
       if (!rmNr && !teileNr && !menge) {
         updateScan();
       } else {
-        // check, ob dasselbe Barcode
+        // check, ob dasselbe Barcode gescannt
         if (
           rmNr === neueRmNr &&
           teileNr === neueTeileNr &&
@@ -75,7 +75,7 @@ export default function App() {
             ]
           );
         } else if (
-          // ob nur die menge anders
+          // Check, ob nur die menge anders ist
           rmNr === neueRmNr &&
           teileNr === neueTeileNr &&
           letzteMenge !== neueMenge
@@ -83,7 +83,7 @@ export default function App() {
           updateScan();
         } else {
           alert("Die Barcodes stimmen nicht übereinander ein!");
-          resetScan();
+          resetAnzScans();
         }
       }
     } else {
@@ -94,12 +94,12 @@ export default function App() {
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style="auto" />
       <View style={styles.container}>
-        <Counter scan={scan} />
+        <Counter anzScans={anzScans} />
         <TextInput
           autoFocus={true}
           showSoftInputOnFocus={false}
-          onBlur={(e) => e.target.focus()}
           onFocus={() => Keyboard.dismiss()}
+          onBlur={(e) => e.target.focus()}
           onChangeText={(e) => scanBehandlung(e)}
           blurOnSubmit={false}
           caretHidden={true}
@@ -113,7 +113,7 @@ export default function App() {
               teileNr: teileNr,
               menge: menge,
               tr: tr,
-              scan: scan,
+              anzScans: anzScans,
             },
           }}
           style={styles.link}
@@ -128,7 +128,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F0FFF0",
+    backgroundColor: "#f0f0f0",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
@@ -144,5 +144,7 @@ const styles = StyleSheet.create({
     backgroundColor: "steelblue",
     borderRadius: 10,
     textAlign: "center",
+    shadowColor: "#000",
+    elevation: 5,
   },
 });
