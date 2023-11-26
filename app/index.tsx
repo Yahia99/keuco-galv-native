@@ -1,3 +1,4 @@
+// Dependencies
 import React, { useState } from "react";
 import {
   StyleSheet,
@@ -7,17 +8,20 @@ import {
   Alert,
   Keyboard,
 } from "react-native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import Counter from "../components/Counter";
 
+// Main Component - Homepage
 export default function App() {
+  // States
   const [rmNr, setRmNr] = useState<String>("");
   const [teileNr, setTeileNr] = useState<String>("");
   const [menge, setMenge] = useState<number>(0);
   const [tr, setTr] = useState<String>("T");
   const [scan, setScan] = useState<number>(0);
   const [letzteMenge, setLetzteMenge] = useState<number>(0);
+  // Scanfunktion
   const scanBehandlung = (newScan: String) => {
     const regex = /([0-9]{8})([0-9]{4}[T|R][0-9]{4})([0-9]+-?[0-9]+)/;
     const result = newScan.match(regex);
