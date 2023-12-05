@@ -6,19 +6,25 @@ import {
   Pressable,
   Modal,
   ActivityIndicator,
+  Alert,
 } from "react-native";
+import axios from "axios";
 
-// Object's Interface
+// Interface
 interface DruckerInterface {
   isModalVisible: boolean;
   setIsModalVisible: (arg: boolean) => void;
-  data: {};
+  data: {
+    name: string;
+    display: string;
+    path: string;
+  }[];
   params: () => {
     rmNr: string;
     teileNr: string;
     menge: string;
     tr: string;
-    scan: string;
+    anzScans: string;
   };
 }
 
@@ -32,60 +38,80 @@ export default function Drucker({
   const [isLoading1, setIsLoading1] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);
   // Getting params from previous page
-  const { rmNr, teileNr, menge, tr, scan } = params();
+  const { rmNr, teileNr, menge, tr, anzScans } = params();
+  const controller = new AbortController();
   // Sending POST request
-  const sendPrintReq = async () => {
+  const sendPrintReq = async (druckerNum: number) => {
     try {
-      setIsLoading1(true);
-      setIsLoading2(true);
-      await fetch("https://galv.keuco.local", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "content-type": "application/json",
+      druckerNum === 0 ? setIsLoading1(true) : setIsLoading2(true);
+      await axios.post(
+        "https://galv.keuco.local",
+        {
+          printer: data[druckerNum].name,
+          summary: {
+            conf: rmNr,
+            part: teileNr,
+            sum: menge,
+            tr: tr,
+            count: anzScans,
+          },
         },
-        body: JSON.stringify({
-          rmNr: rmNr,
-          teileNr: teileNr,
-          menge: menge,
-          tr: tr,
-          scan: scan,
-        }),
-      });
-      alert("Request Success");
+        {
+          signal: controller.signal,
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      );
+      druckerNum === 0 ? setIsLoading1(false) : setIsLoading2(false);
       setIsModalVisible(false);
+      Alert.alert("Abfrage erfolgreich geschickt!");
     } catch (err) {
       setIsLoading1(false);
       setIsLoading2(false);
-      alert(err);
+      Alert.alert("Fehler!", err.message);
+    } finally {
+      // Cleaner Function
+      return () => {
+        controller.abort();
+      };
     }
   };
+
+  const druckern: any[] = [];
+  for (let i = 0; i < data.length; i++) {
+    druckern.push(
+      <Pressable
+        onPress={() => {
+          sendPrintReq(i);
+        }}
+        key={i}
+        disabled={isLoading1 || isLoading2 ? true : false}
+      >
+        <Text style={styles.text} selectable={false}>
+          {(i === 0 ? isLoading1 : isLoading2) ? (
+            <ActivityIndicator size={28} />
+          ) : (
+            data[i].display
+          )}
+        </Text>
+      </Pressable>
+    );
+  }
+
   return (
-    <Modal animationType="slide" transparent={true} visible={isModalVisible}>
+    <Modal animationType="slide" visible={isModalVisible} transparent={true}>
       <View style={styles.container}>
-        <Pressable onPress={() => sendPrintReq()}>
-          {/* 
-            Showing Loader if the request still processing
-          */}
-          {isLoading1 ? (
-            <Text style={styles.text}>
-              <ActivityIndicator />
-            </Text>
-          ) : (
-            <Text style={styles.text}>{"Drucker 1"}</Text> // data.printerName1
-          )}
-        </Pressable>
-        <Pressable onPress={() => sendPrintReq()}>
-          {isLoading2 ? (
-            <Text style={styles.text}>
-              <ActivityIndicator />
-            </Text>
-          ) : (
-            <Text style={styles.text}>{"Drucker 2"}</Text> // data.printerName2
-          )}
-        </Pressable>
-        <Pressable onPress={() => setIsModalVisible(false)}>
-          <Text style={styles.text}>Abbrechen</Text>
+        {druckern}
+        <Pressable
+          onPress={() => {
+            setIsModalVisible(false);
+          }}
+          disabled={isLoading1 || isLoading2 ? true : false}
+        >
+          <Text style={styles.text} selectable={false}>
+            Abbrechen
+          </Text>
         </Pressable>
       </View>
     </Modal>
