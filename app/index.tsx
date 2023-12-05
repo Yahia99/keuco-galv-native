@@ -21,17 +21,17 @@ export default function App() {
   const [tr, setTr] = useState<String>("T");
   const [anzScans, setAnzScans] = useState<number>(0);
   const [letzteMenge, setLetzteMenge] = useState<number>(0);
-  // Scanfunktion
+  // Scan function
   const scanBehandlung = (newScan: String) => {
     const regex = /([0-9]{8})([0-9]{4}[T|R][0-9]{4})([0-9]+-?[0-9]+)/;
     const result = newScan.match(regex);
-    // Check, ob matching gibt
+    // Checking, if input matches regex
     if (result !== null) {
       const neueTr = result[2].includes("R") ? "R" : "T";
       const neueMenge: number = +result[2].split(neueTr, 1)[0];
       const neueTeileNr: String = result[3];
       const neueRmNr: String = result[1];
-      const updateScan = () => {
+      const updateData = () => {
         result[2].includes("R") ? setTr("R") : "";
         setLetzteMenge(neueMenge);
         setMenge(menge + neueMenge);
@@ -39,7 +39,7 @@ export default function App() {
         setRmNr(neueRmNr);
         setTeileNr(neueTeileNr);
       };
-      const resetAnzScans = () => {
+      const resetData = () => {
         setTr("T");
         setMenge(0);
         setLetzteMenge(0);
@@ -47,11 +47,11 @@ export default function App() {
         setRmNr("");
         setTeileNr("");
       };
-      // Check, ob keine werte gibt => (erster Scan)
+      // Checking if values are empty => (first Scan)
       if (!rmNr && !teileNr && !menge) {
-        updateScan();
+        updateData();
       } else {
-        // check, ob dasselbe Barcode gescannt
+        // Checking if the same barcode scanned again
         if (
           rmNr === neueRmNr &&
           teileNr === neueTeileNr &&
@@ -69,25 +69,25 @@ export default function App() {
               {
                 text: "Ja",
                 onPress: () => {
-                  updateScan();
+                  updateData();
                 },
               },
             ]
           );
         } else if (
-          // Check, ob nur die menge anders ist
+          // Checking if only the scan amount is different
           rmNr === neueRmNr &&
           teileNr === neueTeileNr &&
           letzteMenge !== neueMenge
         ) {
-          updateScan();
+          updateData();
         } else {
-          alert("Die Barcodes stimmen nicht übereinander ein!");
-          resetAnzScans();
+          Alert.alert("Fehler!", "Die Barcodes stimmen nicht überein!");
+          resetData();
         }
       }
     } else {
-      alert("Ungültiger Barcode");
+      Alert.alert("Fehler!", "Ungültiger Barcode");
     }
   };
   return (
@@ -117,6 +117,7 @@ export default function App() {
             },
           }}
           style={styles.link}
+          selectable={false}
         >
           Drucken
         </Link>
