@@ -7,29 +7,36 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+import axios from "axios";
 import { useLocalSearchParams, router } from "expo-router";
 import Drucker from "../components/Drucker";
 
 export default function Uebersicht() {
   // States
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState({});
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [data, setData] = useState<[]>([]);
   // Getting params from previous page
   const { rmNr, teileNr, menge, tr, anzScans } = useLocalSearchParams();
+  const controller = new AbortController();
   // Getting printers names from the print server ==> (GET Request)
   const getDrucker = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("https://galv.keuco.local");
-      const json: {}[] = await response.json(); // turning json into js object
-      setData(json);
+      const response = await axios.get("https://galv.keuco.local", {
+        signal: controller.signal,
+      });
+      setData(response.data);
       setIsModalVisible(true);
       setIsLoading(false);
     } catch (err) {
       setIsLoading(false);
-      alert(err);
+      Alert.alert("Fehler", err.message);
     }
+    // Cleaner Function
+    return () => {
+      controller.abort();
+    };
   };
   return (
     <View style={styles.container}>
@@ -41,17 +48,18 @@ export default function Uebersicht() {
         <Text>Anzahl Scans: {anzScans}</Text>
       </View>
       <View style={{ gap: 10 }}>
-        <Pressable onPress={() => getDrucker()}>
+        <Pressable
+          onPress={() => {
+            getDrucker();
+          }}
+          disabled={isLoading ? true : false}
+        >
           {/* 
             Showing Loader if the request still processing
           */}
-          {isLoading ? (
-            <Text style={styles.text}>
-              <ActivityIndicator size={28} />
-            </Text>
-          ) : (
-            <Text style={styles.text}>Drucker Auswählen</Text>
-          )}
+          <Text style={styles.text} selectable={false}>
+            {isLoading ? <ActivityIndicator size={28} /> : "Drucker auswählen"}
+          </Text>
         </Pressable>
         {/* 
           Alerting user by canceling
@@ -59,7 +67,7 @@ export default function Uebersicht() {
         <Pressable
           onPress={() =>
             Alert.alert(
-              "Achtung!",
+              "Warnung!",
               "Beim Verlassen der Seite wird alles zurückgesetzt",
               [
                 { text: "Abbrechen", onPress: () => "", style: "cancel" },
@@ -68,7 +76,9 @@ export default function Uebersicht() {
             )
           }
         >
-          <Text style={styles.text}>Abbrechen</Text>
+          <Text style={styles.text} selectable={false}>
+            Abbrechen
+          </Text>
         </Pressable>
       </View>
       {/* 
