@@ -31,7 +31,7 @@ export default function Uebersicht() {
       setIsLoading(false);
     } catch (err) {
       setIsLoading(false);
-      Alert.alert("Fehler", err.message);
+      Alert.alert("Fehler!", err.message);
     }
     // Cleaner Function
     return () => {
