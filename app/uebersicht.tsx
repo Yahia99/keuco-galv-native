@@ -16,16 +16,17 @@ export default function Uebersicht() {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [data, setData] = useState<[]>([]);
-  // Getting params from previous page
-  const { rmNr, teileNr, menge, tr, anzScans } = useLocalSearchParams();
   const controller = new AbortController();
   // Getting printers names from the print server ==> (GET Request)
   const getDrucker = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get("https://galv.keuco.local", {
-        signal: controller.signal,
-      });
+      const response = await axios.get(
+        "https://jsonplaceholder.typicode.com/users",
+        {
+          signal: controller.signal,
+        }
+      );
       setData(response.data);
       setIsModalVisible(true);
       setIsLoading(false);
@@ -38,45 +39,54 @@ export default function Uebersicht() {
       controller.abort();
     };
   };
+
+  const valuesArr: any = [];
+  const values = useLocalSearchParams();
+  let key = 0;
+  for (const value in values) {
+    valuesArr.push(
+      <View style={styles.textContainer} key={key}>
+        <Text style={styles.text}>{value.toUpperCase()}</Text>
+        <Text style={[styles.text]}>{values[value]}</Text>
+      </View>
+    );
+    key++;
+  }
+
   return (
     <View style={styles.container}>
-      <View style={styles.textContainer}>
-        <Text>RmNr: {rmNr}</Text>
-        <Text>TeileNr: {teileNr} </Text>
-        <Text>Menge: {menge}</Text>
-        <Text>T/R: {anzScans ? (+anzScans === 0 ? "" : tr) : ""}</Text>
-        <Text>Anzahl Scans: {anzScans}</Text>
-      </View>
+      <View style={styles.mainTextContainer}>{valuesArr}</View>
       <View style={{ gap: 10 }}>
-        <Pressable
+        <Text
+          style={styles.button}
+          selectable={false}
           onPress={() => {
             getDrucker();
           }}
-          disabled={isLoading ? true : false}
+          disabled={isLoading}
         >
           {/* 
-            Showing Loader if the request still processing
-          */}
-          <Text style={styles.text} selectable={false}>
-            {isLoading ? <ActivityIndicator size={28} /> : "Drucker auswählen"}
-          </Text>
-        </Pressable>
-        {/* 
+          Showing Loader if the request still loading
+        */}
+          {isLoading ? <ActivityIndicator size={28} /> : "Drucker auswählen"}
+        </Text>
+        {/*
           Alerting user by canceling
         */}
         <Pressable
           onPress={() =>
             Alert.alert(
               "Warnung!",
-              "Beim Verlassen der Seite wird alles zurückgesetzt",
+              "Beim Verlassen der Seite werden alle Daten zurückgesetzt",
               [
                 { text: "Abbrechen", onPress: () => "", style: "cancel" },
                 { text: "Ok", onPress: () => router.back() },
               ]
             )
           }
+          disabled={isLoading}
         >
-          <Text style={styles.text} selectable={false}>
+          <Text style={styles.button} selectable={false}>
             Abbrechen
           </Text>
         </Pressable>
@@ -104,15 +114,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
-  textContainer: {
-    width: "100%",
+  mainTextContainer: {
     flex: 0.8,
+    width: "100%",
     padding: 20,
     gap: 30,
     borderRadius: 10,
     borderWidth: 1,
   },
+  textContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
   text: {
+    flex: 1,
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlignVertical: "center",
+  },
+  button: {
     width: "100%",
     padding: 25,
     fontSize: 20,
