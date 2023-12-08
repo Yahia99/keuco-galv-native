@@ -7,6 +7,7 @@ import {
   Modal,
   ActivityIndicator,
   Alert,
+  FlatList,
 } from "react-native";
 import axios from "axios";
 
@@ -45,7 +46,7 @@ export default function Drucker({
     try {
       druckerNum === 0 ? setIsLoading1(true) : setIsLoading2(true);
       await axios.post(
-        "https://galv.keuco.local",
+        "https://jsonplaceholder.typicode.com/users",
         {
           printer: data[druckerNum].name,
           summary: {
@@ -63,9 +64,10 @@ export default function Drucker({
           },
         }
       );
-      druckerNum === 0 ? setIsLoading1(false) : setIsLoading2(false);
+      setIsLoading1(false);
+      setIsLoading2(false);
       setIsModalVisible(false);
-      Alert.alert("Abfrage erfolgreich geschickt!");
+      Alert.alert("Erfolg!", "Abfrage erfolgreich geschickt");
     } catch (err) {
       setIsLoading1(false);
       setIsLoading2(false);
@@ -78,31 +80,32 @@ export default function Drucker({
     }
   };
 
-  const druckern: any[] = [];
-  for (let i = 0; i < data.length; i++) {
-    druckern.push(
-      <Pressable
-        onPress={() => {
-          sendPrintReq(i);
-        }}
-        key={i}
-        disabled={isLoading1 || isLoading2 ? true : false}
-      >
-        <Text style={styles.text} selectable={false}>
-          {(i === 0 ? isLoading1 : isLoading2) ? (
-            <ActivityIndicator size={28} />
-          ) : (
-            data[i].display
-          )}
-        </Text>
-      </Pressable>
-    );
-  }
+  const newData = [
+    { id: 1, name: "Drucker 1", display: "Drucker 1" },
+    { id: 2, name: "Drucker 2", display: "Drucker 2" },
+  ];
 
   return (
     <Modal animationType="slide" visible={isModalVisible} transparent={true}>
       <View style={styles.container}>
-        {druckern}
+        <FlatList
+          data={newData}
+          renderItem={({ item, index }) => (
+            <Text
+              style={styles.text}
+              selectable={false}
+              onPress={() => sendPrintReq(index)}
+              disabled={isLoading1 || isLoading2 ? true : false}
+              key={index}
+            >
+              {(index === 0 ? isLoading1 : isLoading2) ? (
+                <ActivityIndicator size={28} />
+              ) : (
+                item.display
+              )}
+            </Text>
+          )}
+        />
         <Pressable
           onPress={() => {
             setIsModalVisible(false);
@@ -121,20 +124,19 @@ export default function Drucker({
 const styles = StyleSheet.create({
   container: {
     height: "auto",
+    maxHeight: 400,
     width: "100%",
     position: "absolute",
     bottom: 0,
     backgroundColor: "#eaeaea",
     paddingVertical: 10,
+    paddingBottom: 20,
     paddingHorizontal: 20,
-    gap: 10,
-    justifyContent: "flex-end",
     borderTopRightRadius: 18,
     borderTopLeftRadius: 18,
-    alignItems: "stretch",
-    alignSelf: "center",
   },
   text: {
+    marginTop: 10,
     padding: 25,
     fontSize: 20,
     color: "#fff",
