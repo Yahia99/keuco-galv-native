@@ -7,8 +7,9 @@ import {
   SafeAreaView,
   Alert,
   Keyboard,
+  Text,
 } from "react-native";
-import { Link } from "expo-router";
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import Counter from "../components/Counter";
 
@@ -23,7 +24,7 @@ export default function App() {
   const [letzteMenge, setLetzteMenge] = useState<number>(0);
   // Scan function
   const scanBehandlung = (newScan: String) => {
-    const regex = /([0-9]{8})([0-9]{4}[T|R][0-9]{4})([0-9]+-?[0-9]+)/;
+    const regex = /([0-9]{8})([0-9]{4}[T|R][0-9]{4})([0-9]+[-|.]?[0-9]+)/;
     const result = newScan.match(regex);
     // Checking, if input matches regex
     if (result !== null) {
@@ -105,22 +106,26 @@ export default function App() {
           caretHidden={true}
           value={""}
         />
-        <Link
-          href={{
-            pathname: "/uebersicht",
-            params: {
-              rmNr: rmNr,
-              teileNr: teileNr,
-              menge: menge,
-              tr: tr,
-              anzScans: anzScans,
-            },
-          }}
-          style={styles.link}
+        <Text
+          style={styles.button}
           selectable={false}
+          onPress={() =>
+            !anzScans
+              ? Alert.alert("Fehler!", "Es wurde noch nicht gescannt")
+              : router.push({
+                  pathname: "/uebersicht",
+                  params: {
+                    rmNr: rmNr,
+                    teileNr: teileNr,
+                    menge: menge,
+                    tr: tr,
+                    anzScans: anzScans,
+                  },
+                })
+          }
         >
           Drucken
-        </Link>
+        </Text>
       </View>
     </SafeAreaView>
   );
@@ -136,7 +141,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingBottom: 10,
   },
-  link: {
+  button: {
     width: "100%",
     paddingTop: 25,
     paddingBottom: 25,
