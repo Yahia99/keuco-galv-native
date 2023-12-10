@@ -3,9 +3,9 @@ import {
   StyleSheet,
   Text,
   View,
-  Pressable,
   Modal,
   ActivityIndicator,
+  ToastAndroid,
   Alert,
   FlatList,
 } from "react-native";
@@ -36,15 +36,13 @@ export default function Drucker({
   params,
 }: DruckerInterface) {
   // States
-  const [isLoading1, setIsLoading1] = useState(false);
-  const [isLoading2, setIsLoading2] = useState(false);
+  const [isLoading, setIsLoading] = useState<{ index: number }>({ index: 0 });
   // Getting params from previous page
   const { rmNr, teileNr, menge, tr, anzScans } = params();
   const controller = new AbortController();
   // Sending POST request
   const sendPrintReq = async (druckerNum: number) => {
     try {
-      druckerNum === 0 ? setIsLoading1(true) : setIsLoading2(true);
       await axios.post(
         "https://jsonplaceholder.typicode.com/users",
         {
@@ -64,15 +62,18 @@ export default function Drucker({
           },
         }
       );
-      setIsLoading1(false);
-      setIsLoading2(false);
-      setIsModalVisible(false);
-      Alert.alert("Erfolg!", "Abfrage erfolgreich geschickt");
-    } catch (err) {
-      setIsLoading1(false);
-      setIsLoading2(false);
+      ToastAndroid.showWithGravityAndOffset(
+        "Abfrage erfolgreich geschickt",
+        ToastAndroid.SHORT,
+        ToastAndroid.TOP,
+        0,
+        0
+      );
+      // Alert.alert("Erfolg!", "Abfrage erfolgreich geschickt");
+    } catch (err: any) {
       Alert.alert("Fehler!", err.message);
     } finally {
+      setIsModalVisible(false);
       // Cleaner Function
       return () => {
         controller.abort();
@@ -89,33 +90,36 @@ export default function Drucker({
     <Modal animationType="slide" visible={isModalVisible} transparent={true}>
       <View style={styles.container}>
         <FlatList
-          data={newData}
+          data={data}
           renderItem={({ item, index }) => (
             <Text
               style={styles.text}
               selectable={false}
-              onPress={() => sendPrintReq(index)}
-              disabled={isLoading1 || isLoading2 ? true : false}
+              onPress={() => {
+                setIsLoading({ ...isLoading, index: index + 1 });
+                sendPrintReq(index);
+              }}
+              disabled={isLoading[`index`] ? true : false}
               key={index}
             >
-              {(index === 0 ? isLoading1 : isLoading2) ? (
+              {isLoading.index === index + 1 ? (
                 <ActivityIndicator size={28} />
               ) : (
-                item.display
+                `Drucker ${item.id}`
               )}
             </Text>
           )}
         />
-        <Pressable
+        <Text
+          style={styles.text}
+          selectable={false}
           onPress={() => {
             setIsModalVisible(false);
           }}
-          disabled={isLoading1 || isLoading2 ? true : false}
+          disabled={isLoading.index ? true : false}
         >
-          <Text style={styles.text} selectable={false}>
-            Abbrechen
-          </Text>
-        </Pressable>
+          Abbrechen
+        </Text>
       </View>
     </Modal>
   );
@@ -129,7 +133,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     backgroundColor: "#eaeaea",
-    paddingVertical: 10,
+    paddingTop: 10,
     paddingBottom: 20,
     paddingHorizontal: 20,
     borderTopRightRadius: 18,
@@ -144,6 +148,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     textAlign: "center",
     shadowColor: "#000",
-    elevation: 5,
+    elevation: 3,
   },
 });

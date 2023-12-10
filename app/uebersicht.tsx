@@ -47,7 +47,9 @@ export default function Uebersicht() {
     valuesArr.push(
       <View style={styles.textContainer} key={key}>
         <Text style={styles.text}>{value.toUpperCase()}</Text>
-        <Text style={[styles.text]}>{values[value]}</Text>
+        <Text style={[styles.text, { textAlign: "right" }]}>
+          {values[value]}
+        </Text>
       </View>
     );
     key++;
@@ -112,20 +114,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 20,
   },
   mainTextContainer: {
     flex: 0.8,
     width: "100%",
     padding: 20,
-    gap: 30,
+    gap: 10,
     borderRadius: 10,
     borderWidth: 1,
   },
   textContainer: {
-    flex: 1,
+    flex: 0.2,
     flexDirection: "row",
     justifyContent: "flex-start",
+    padding: 10,
   },
   text: {
     flex: 1,
