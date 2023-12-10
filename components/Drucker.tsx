@@ -16,6 +16,7 @@ interface DruckerInterface {
   isModalVisible: boolean;
   setIsModalVisible: (arg: boolean) => void;
   data: {
+    id: number;
     name: string;
     display: string;
     path: string;
@@ -62,14 +63,7 @@ export default function Drucker({
           },
         }
       );
-      ToastAndroid.showWithGravityAndOffset(
-        "Abfrage erfolgreich geschickt",
-        ToastAndroid.SHORT,
-        ToastAndroid.TOP,
-        0,
-        0
-      );
-      // Alert.alert("Erfolg!", "Abfrage erfolgreich geschickt");
+      ToastAndroid.show("Abfrage erfolgreich geschickt", ToastAndroid.SHORT);
     } catch (err: any) {
       Alert.alert("Fehler!", err.message);
     } finally {
@@ -93,7 +87,11 @@ export default function Drucker({
           data={data}
           renderItem={({ item, index }) => (
             <Text
-              style={styles.text}
+              style={[
+                styles.button,
+                ,
+                { backgroundColor: isLoading.index ? "#7ba7cc" : "steelblue" },
+              ]}
               selectable={false}
               onPress={() => {
                 setIsLoading({ ...isLoading, index: index + 1 });
@@ -111,7 +109,11 @@ export default function Drucker({
           )}
         />
         <Text
-          style={styles.text}
+          style={[
+            styles.button,
+            ,
+            { backgroundColor: isLoading.index ? "#7ba7cc" : "steelblue" },
+          ]}
           selectable={false}
           onPress={() => {
             setIsModalVisible(false);
@@ -139,7 +141,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 18,
     borderTopLeftRadius: 18,
   },
-  text: {
+  button: {
     marginTop: 10,
     padding: 25,
     fontSize: 20,

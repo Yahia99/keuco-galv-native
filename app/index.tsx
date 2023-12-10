@@ -24,7 +24,7 @@ export default function App() {
   const [letzteMenge, setLetzteMenge] = useState<number>(0);
   // Scan function
   const scanBehandlung = (newScan: String) => {
-    const regex = /([0-9]{8})([0-9]{4}[T|R][0-9]{4})([0-9]+[-|.]?[0-9]+)/;
+    const regex = /([0-9]{8})([0-9]{4}[T|R][0-9]{4})([0-9]+[-|.]?[0-9]+)/y;
     const result = newScan.match(regex);
     // Checking, if input matches regex
     if (result !== null) {
@@ -100,8 +100,8 @@ export default function App() {
           autoFocus={true}
           showSoftInputOnFocus={false}
           onFocus={() => Keyboard.dismiss()}
-          onBlur={(e) => e.target.focus()}
-          onChangeText={(e) => scanBehandlung(e)}
+          onBlur={(e: any) => e.target.focus()}
+          onChangeText={(e: String) => scanBehandlung(e)}
           blurOnSubmit={false}
           caretHidden={true}
           value={""}

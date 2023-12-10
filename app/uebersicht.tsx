@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Pressable,
-  Alert,
-  ActivityIndicator,
-} from "react-native";
+import { StyleSheet, Text, View, Alert, ActivityIndicator } from "react-native";
 import axios from "axios";
 import { useLocalSearchParams, router } from "expo-router";
 import Drucker from "../components/Drucker";
@@ -16,8 +9,8 @@ export default function Uebersicht() {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [data, setData] = useState<[]>([]);
+  // Getting printers from the print server ==> (GET Request)
   const controller = new AbortController();
-  // Getting printers names from the print server ==> (GET Request)
   const getDrucker = async () => {
     try {
       setIsLoading(true);
@@ -30,14 +23,15 @@ export default function Uebersicht() {
       setData(response.data);
       setIsModalVisible(true);
       setIsLoading(false);
-    } catch (err) {
+    } catch (err: any) {
       setIsLoading(false);
       Alert.alert("Fehler!", err.message);
+    } finally {
+      // Cleaner Function
+      return () => {
+        controller.abort();
+      };
     }
-    // Cleaner Function
-    return () => {
-      controller.abort();
-    };
   };
 
   const valuesArr: any = [];
@@ -46,7 +40,9 @@ export default function Uebersicht() {
   for (const value in values) {
     valuesArr.push(
       <View style={styles.textContainer} key={key}>
-        <Text style={styles.text}>{value.toUpperCase()}</Text>
+        <Text style={styles.text}>
+          {value.replace(value[0], value[0].toUpperCase())}
+        </Text>
         <Text style={[styles.text, { textAlign: "right" }]}>
           {values[value]}
         </Text>
@@ -75,7 +71,7 @@ export default function Uebersicht() {
         {/*
           Alerting user by canceling
         */}
-        <Pressable
+        <Text
           onPress={() =>
             Alert.alert(
               "Warnung!",
@@ -86,12 +82,16 @@ export default function Uebersicht() {
               ]
             )
           }
+          style={[
+            styles.button,
+            ,
+            { backgroundColor: isLoading ? "#7ba7cc" : "steelblue" },
+          ]}
+          selectable={false}
           disabled={isLoading}
         >
-          <Text style={styles.button} selectable={false}>
-            Abbrechen
-          </Text>
-        </Pressable>
+          Abbrechen
+        </Text>
       </View>
       {/* 
         Showing modal after the request is successfully done
