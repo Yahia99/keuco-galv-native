@@ -12,6 +12,7 @@ import {
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import Counter from "../components/Counter";
+import Logo from "../components/Logo";
 
 // Main Component - Homepage
 export default function App() {
@@ -91,9 +92,13 @@ export default function App() {
       Alert.alert("Fehler!", "Ungültiger Barcode");
     }
   };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style="auto" />
+      <View style={styles.logoContainer}>
+        <Logo width={150} height={100} />
+      </View>
       <View style={styles.container}>
         <Counter anzScans={anzScans} />
         <TextInput
@@ -132,14 +137,22 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  logoContainer: {
+    padding: 30,
+    backgroundColor: "#fff",
+    borderBottomWidth: 2,
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#f9f9f9",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingTop: 50,
-    paddingBottom: 20,
+    padding: 20,
   },
   button: {
     width: "100%",

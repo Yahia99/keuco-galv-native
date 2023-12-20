@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "keuco-galv-native",
+    "name": "Keuco Galvanik App",
     "slug": "keuco-galv-native",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/fav.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -19,11 +19,11 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#000"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png",
+      "favicon": "./assets/fav.png",
       "bundler": "metro"
     },
     "plugins": ["expo-router"]

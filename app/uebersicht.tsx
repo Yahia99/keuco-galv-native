@@ -1,8 +1,17 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Alert, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Alert,
+  ActivityIndicator,
+  SafeAreaView,
+} from "react-native";
 import axios from "axios";
 import { useLocalSearchParams, router } from "expo-router";
 import Drucker from "../components/Drucker";
+import Logo from "../components/Logo";
+import { StatusBar } from "expo-status-bar";
 
 export default function Uebersicht() {
   // States
@@ -52,66 +61,89 @@ export default function Uebersicht() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.mainTextContainer}>{valuesArr}</View>
-      <View style={{ gap: 10 }}>
-        <Text
-          style={styles.button}
-          selectable={false}
-          onPress={() => {
-            getDrucker();
-          }}
-          disabled={isLoading}
-        >
-          {/* 
+    <SafeAreaView style={{ flex: 1, backgroundColor: "red" }}>
+      <StatusBar
+        backgroundColor="#fff"
+        translucent={true}
+        animated={true}
+        style="dark"
+      />
+      <View style={styles.logoContainer}>
+        <Logo width={150} height={100} />
+      </View>
+      <View style={styles.container}>
+        <View style={styles.mainTextContainer}>{valuesArr}</View>
+        <View style={{ gap: 10 }}>
+          <Text
+            style={[
+              styles.button,
+              { backgroundColor: isLoading ? "#7ba7cc" : "steelblue" },
+            ]}
+            selectable={false}
+            onPress={() => {
+              getDrucker();
+            }}
+            disabled={isLoading}
+          >
+            {/* 
           Showing Loader if the request still loading
         */}
-          {isLoading ? <ActivityIndicator size={28} /> : "Drucker auswählen"}
-        </Text>
-        {/*
+            {isLoading ? <ActivityIndicator size={28} /> : "Drucker auswählen"}
+          </Text>
+          {/*
           Alerting user by canceling
         */}
-        <Text
-          onPress={() =>
-            Alert.alert(
-              "Warnung!",
-              "Beim Verlassen der Seite werden alle Daten zurückgesetzt",
-              [
-                { text: "Abbrechen", onPress: () => "", style: "cancel" },
-                { text: "Ok", onPress: () => router.back() },
-              ]
-            )
-          }
-          style={[
-            styles.button,
-            ,
-            { backgroundColor: isLoading ? "#7ba7cc" : "steelblue" },
-          ]}
-          selectable={false}
-          disabled={isLoading}
-        >
-          Abbrechen
-        </Text>
-      </View>
-      {/* 
+          <Text
+            onPress={() =>
+              Alert.alert(
+                "Warnung!",
+                "Beim Verlassen der Seite werden alle Daten zurückgesetzt",
+                [
+                  { text: "Abbrechen", onPress: () => "", style: "cancel" },
+                  { text: "Ok", onPress: () => router.back() },
+                ]
+              )
+            }
+            style={[
+              styles.button,
+              { backgroundColor: isLoading ? "#7ba7cc" : "steelblue" },
+            ]}
+            selectable={false}
+            disabled={isLoading}
+          >
+            Abbrechen
+          </Text>
+        </View>
+        {/* 
         Showing modal after the request is successfully done
       */}
-      {isModalVisible ? (
-        <Drucker
-          isModalVisible={isModalVisible}
-          setIsModalVisible={setIsModalVisible}
-          data={data}
-          params={useLocalSearchParams}
-        />
-      ) : null}
-    </View>
+        {isModalVisible ? (
+          <Drucker
+            isModalVisible={isModalVisible}
+            setIsModalVisible={setIsModalVisible}
+            data={data}
+            params={useLocalSearchParams}
+          />
+        ) : null}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  logoContainer: {
+    padding: 30,
+    backgroundColor: "#fff",
+    borderBottomWidth: 2,
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#f9f9f9",
     justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingVertical: 20,
