@@ -43,7 +43,7 @@ export default function Uebersicht() {
     }
   };
 
-  const valuesArr: any = [];
+  const valuesArr: Array<React.JSX.Element> = [];
   const values = useLocalSearchParams();
   let key = 0;
   for (const value in values) {
@@ -122,7 +122,13 @@ export default function Uebersicht() {
             isModalVisible={isModalVisible}
             setIsModalVisible={setIsModalVisible}
             data={data}
-            params={useLocalSearchParams}
+            params={{
+              rmNr: values.rmNr,
+              teileNr: values.teileNr,
+              menge: values.mengeNr,
+              tr: values.tr,
+              anzScans: values.anzScans,
+            }}
           />
         ) : null}
       </View>

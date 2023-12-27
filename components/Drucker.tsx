@@ -21,12 +21,12 @@ interface DruckerInterface {
     display: string;
     path: string;
   }[];
-  params: () => {
-    rmNr: string;
-    teileNr: string;
-    menge: string;
-    tr: string;
-    anzScans: string;
+  params: {
+    rmNr: string | string[] | undefined;
+    teileNr: string | string[] | undefined;
+    menge: string | string[] | undefined;
+    tr: string | string[] | undefined;
+    anzScans: string | string[] | undefined;
   };
 }
 
@@ -39,7 +39,7 @@ export default function Drucker({
   // States
   const [isLoading, setIsLoading] = useState<{ index: number }>({ index: 0 });
   // Getting params from previous page
-  const { rmNr, teileNr, menge, tr, anzScans } = params();
+  const { rmNr, teileNr, menge, tr, anzScans } = params;
   const controller = new AbortController();
   // Sending POST request
   const sendPrintReq = async (druckerNum: number) => {
@@ -57,10 +57,10 @@ export default function Drucker({
           },
         },
         {
-          signal: controller.signal,
           headers: {
             "content-type": "application/json",
           },
+          signal: controller.signal,
         }
       );
       ToastAndroid.show("Abfrage erfolgreich geschickt", ToastAndroid.SHORT);
