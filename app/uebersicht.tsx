@@ -122,15 +122,11 @@ export default function Uebersicht() {
             isModalVisible={isModalVisible}
             setIsModalVisible={setIsModalVisible}
             data={data}
-            params={{
-              rmNr: values.rmNr,
-              teileNr: values.teileNr,
-              menge: values.mengeNr,
-              tr: values.tr,
-              anzScans: values.anzScans,
-            }}
+            params={useLocalSearchParams}
           />
-        ) : null}
+        ) : (
+          ""
+        )}
       </View>
     </SafeAreaView>
   );

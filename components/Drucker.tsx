@@ -11,35 +11,34 @@ import {
 } from "react-native";
 import axios from "axios";
 
-// Interface
-interface DruckerInterface {
+// Type
+type DruckerType = {
   isModalVisible: boolean;
-  setIsModalVisible: (arg: boolean) => void;
+  setIsModalVisible: (bool: boolean) => void;
   data: {
-    id: number;
     name: string;
     display: string;
     path: string;
   }[];
-  params: {
-    rmNr: string | string[] | undefined;
-    teileNr: string | string[] | undefined;
-    menge: string | string[] | undefined;
-    tr: string | string[] | undefined;
-    anzScans: string | string[] | undefined;
+  params: () => {
+    rmNr?: string;
+    teileNr?: string;
+    menge?: string;
+    tr?: string;
+    anzScans?: string;
   };
-}
+};
 
 export default function Drucker({
   isModalVisible,
   setIsModalVisible,
   data,
   params,
-}: DruckerInterface) {
+}: DruckerType) {
   // States
   const [isLoading, setIsLoading] = useState<{ index: number }>({ index: 0 });
   // Getting params from previous page
-  const { rmNr, teileNr, menge, tr, anzScans } = params;
+  const { rmNr, teileNr, menge, tr, anzScans } = params();
   const controller = new AbortController();
   // Sending POST request
   const sendPrintReq = async (druckerNum: number) => {
@@ -75,11 +74,6 @@ export default function Drucker({
     }
   };
 
-  const newData = [
-    { id: 1, name: "Drucker 1", display: "Drucker 1" },
-    { id: 2, name: "Drucker 2", display: "Drucker 2" },
-  ];
-
   return (
     <Modal animationType="slide" visible={isModalVisible} transparent={true}>
       <View style={styles.container}>
@@ -103,7 +97,7 @@ export default function Drucker({
               {isLoading.index === index + 1 ? (
                 <ActivityIndicator size={28} />
               ) : (
-                `Drucker ${item.id}`
+                `Drucker ${item.display}`
               )}
             </Text>
           )}

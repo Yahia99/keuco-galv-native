@@ -93,6 +93,22 @@ export default function App() {
     }
   };
 
+  type params = {
+    rmNr?: String;
+    teileNr?: String;
+    menge?: number;
+    tr?: String;
+    anzScans?: number;
+  };
+
+  const params: params = {
+    rmNr: rmNr,
+    teileNr: teileNr,
+    menge: menge,
+    tr: tr,
+    anzScans: anzScans,
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style="auto" />
@@ -103,12 +119,12 @@ export default function App() {
         <Counter anzScans={anzScans} />
         <TextInput
           autoFocus={true}
-          showSoftInputOnFocus={false}
-          onFocus={() => Keyboard.dismiss()}
+          // showSoftInputOnFocus={false}
+          // onFocus={() => Keyboard.dismiss()}
           onBlur={(e: any) => e.target.focus()}
           onChangeText={(e: String) => scanBehandlung(e)}
           blurOnSubmit={false}
-          caretHidden={true}
+          // caretHidden={true}
           value={""}
         />
         <Text
@@ -119,13 +135,7 @@ export default function App() {
               ? Alert.alert("Fehler!", "Es wurde noch nicht gescannt")
               : router.push({
                   pathname: "/uebersicht",
-                  params: {
-                    rmNr: rmNr,
-                    teileNr: teileNr,
-                    menge: menge,
-                    tr: tr,
-                    anzScans: anzScans,
-                  },
+                  params: params,
                 })
           }
         >
